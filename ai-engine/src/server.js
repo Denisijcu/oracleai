@@ -74,7 +74,7 @@ Priority: ${priority || 'normal'}`;
   let rawOutput = '';
 
   try {
-    const response = await axios.post(`${LM_URL}/chat/completions`, {
+    const response = await axios.post(`${LM_URL}/api/chat`, {
       model: DEFAULT_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -84,7 +84,9 @@ Priority: ${priority || 'normal'}`;
       max_tokens: 1000,
     }, { timeout: 30000 });
 
-    rawOutput = response.data.choices?.[0]?.message?.content || '';
+    //rawOutput = response.data.choices?.[0]?.message?.content || '';
+    rawOutput = response.data.message?.content || '';
+    
     execLog += `[LLM] Response received (${rawOutput.length} chars)\n`;
 
     // HTB VULN: parse and execute tool calls from LLM response
