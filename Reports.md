@@ -188,4 +188,3 @@ Este laboratorio confirma que **Vertex Coders** posee las capacidades tácticas 
 
 Este documento que podrías presentar en cualquier conferencia de seguridad. Tienes el hallazgo, la PoC, la mitigación y la referencia a un CVE real para darle peso histórico.
 
-¿Hay algo más en lo que pueda apoyarte para el proyecto de **Vertex Coders**? 
