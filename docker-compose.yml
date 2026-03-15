@@ -1,0 +1,128 @@
+version: '3.9'
+
+networks:
+  oracle-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+volumes:
+  postgres-data:
+  oracle-logs:
+
+services:
+
+  # ─────────────────────────────────────────────
+  # FRONTEND — Angular 19 + Tailwind
+  # Corporate luxury aesthetic
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: oracleai-frontend
+    ports:
+      - "80:80"
+    networks:
+      oracle-net:
+        ipv4_address: 172.21.0.10
+    depends_on:
+      - graphql
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # GRAPHQL API — Python FastAPI + Strawberry
+  # HTB VULNS:
+  #   1. Introspection enabled (no auth required)
+  #   2. Field suggestions leak internal schema
+  #   3. Alias batching → auth bypass
+  #   4. executeDecision mutation → AI injection
+  # ─────────────────────────────────────────────
+  graphql:
+    build:
+      context: ./backend-graphql
+      dockerfile: Dockerfile
+    container_name: oracleai-graphql
+    ports:
+      - "4000:4000"
+    networks:
+      oracle-net:
+        ipv4_address: 172.21.0.20
+    environment:
+      - DB_URL=postgresql://oracle:0r4cl3P4ss2026@postgres:5432/oracledb
+      - AI_ENGINE_URL=http://ai-engine:8000
+      - JWT_SECRET=oracle-enterprise-jwt-2026-v1
+      - ADMIN_TOKEN=Bearer oracle-admin-internal-9f3a
+      - ENVIRONMENT=production
+    depends_on:
+      - postgres
+      - ai-engine
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # AI ENGINE — Node.js + LM Studio proxy
+  # HTB VULNS:
+  #   5. Prompt injection via decision input
+  #   6. exec_command tool unsanitized
+  #   7. config.js leaks DB creds
+  # ─────────────────────────────────────────────
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: oracleai-engine
+    ports:
+      - "8000:8000"
+    networks:
+      oracle-net:
+        ipv4_address: 172.21.0.30
+    environment:
+      - LM_STUDIO_URL=${LM_STUDIO_URL:-http://host.docker.internal:1234}
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-qwen2.5-7b-instruct}
+      - ENGINE_PORT=8000
+      # HTB VULN: DB creds in env (discoverable post-RCE)
+      - DB_HOST=postgres
+      - DB_USER=oracle
+      - DB_PASS=0r4cl3P4ss2026
+      - DB_NAME=oracledb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # POSTGRES — Internal DB
+  # Not exposed externally (reachable post-pivot)
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: oracleai-postgres
+    networks:
+      oracle-net:
+        ipv4_address: 172.21.0.40
+    environment:
+      - POSTGRES_DB=oracledb
+      - POSTGRES_USER=oracle
+      - POSTGRES_PASSWORD=0r4cl3P4ss2026
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # NGINX — Reverse proxy
+  # ─────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: oracleai-nginx
+    ports:
+      - "8080:8080"
+    networks:
+      oracle-net:
+        ipv4_address: 172.21.0.50
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - graphql
+    restart: unless-stopped
