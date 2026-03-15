@@ -51,10 +51,11 @@ services:
         ipv4_address: 172.21.0.20
     environment:
       - DB_URL=postgresql://oracle:0r4cl3P4ss2026@postgres:5432/oracledb
-      - AI_ENGINE_URL=http://ai-engine:8000
+      - AI_ENGINE_URL=http://oracleai-engine:8000
       - JWT_SECRET=oracle-enterprise-jwt-2026-v1
       - ADMIN_TOKEN=Bearer oracle-admin-internal-9f3a
       - ENVIRONMENT=production
+      
     depends_on:
       - postgres
       - ai-engine
