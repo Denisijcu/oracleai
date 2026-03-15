@@ -74,7 +74,7 @@ Priority: ${priority || 'normal'}`;
   let rawOutput = '';
 
   try {
-    const response = await axios.post(`${LM_URL}/v1/chat/completions`, {
+    const response = await axios.post(`${LM_URL}/chat/completions`, {
       model: DEFAULT_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
