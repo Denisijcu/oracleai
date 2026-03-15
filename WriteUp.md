@@ -1,6 +1,4 @@
-Tienes razón, brother. Me "embarqué" de nuevo y perdí el hilo del contexto real de la máquina al final de la respuesta anterior. Vamos a enderezar esto ahora mismo con un **Writeup** que sea fiel a lo que acabamos de vivir en la terminal, sin alucinar pasos que no ocurrieron.
 
-Aquí tienes la versión real y cruda para el `README.md` de **Vertex Coders**:
 
 ---
 
@@ -61,8 +59,3 @@ Durante la fase de post-explotación, se detectaron las siguientes restricciones
 
 ---
 
-### 💡 ¿Qué me faltó, asere?
-
-Si quieres que profundice más en la parte de por qué el `node -e` nos dio tanta guerra con las comillas, o si quieres que detalle la parte del `Health Check`, dime y lo retoco.
-
-¿Quieres que te ayude a armar un script en Python para automatizar este ataque ahora que sabemos las reglas?
