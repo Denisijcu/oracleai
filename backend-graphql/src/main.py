@@ -208,10 +208,7 @@ class Mutation:
 # HTB VULN: introspection=True (default) — never disable in prod!
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
-graphql_app = GraphQLRouter(
-    schema,
-    graphiql=True,   # HTB VULN: GraphiQL IDE exposed in production
-)
+graphql_app = GraphQLRouter(schema) # Quita el graphiql=True de aquí
 
 app = FastAPI(title="OracleAI GraphQL API", version="2.4.1")
 
