@@ -19,22 +19,16 @@ RUN mkdir -p /home/oracleuser && \
     chown oracleuser:oracleuser /home/oracleuser/user.txt
 
 # HTB VULN: config file with hardcoded creds (discoverable post-RCE)
-RUN mkdir -p /opt/oracle && cat > /opt/oracle/config.py << 'EOF'
-# OracleAI Internal Configuration
-# DO NOT COMMIT TO VERSION CONTROL
-
-DATABASE_URL = "postgresql://oracle:0r4cl3P4ss2026@postgres:5432/oracledb"
-AI_ENGINE_SECRET = "OracleInternal@2026!"
-ADMIN_API_KEY = "oracle-admin-internal-9f3a"
-SSH_KEY_PATH = "/home/oracleuser/.ssh/id_rsa"
-
-# Internal service map
-SERVICES = {
-    "graphql":   "http://localhost:4000",
-    "ai_engine": "http://ai-engine:8000",
-    "postgres":  "postgres:5432",
-}
-EOF
+RUN mkdir -p /opt/oracle && \
+    echo 'DATABASE_URL = "postgresql://oracle:0r4cl3P4ss2026@postgres:5432/oracledb"' > /opt/oracle/config.py && \
+    echo 'AI_ENGINE_SECRET = "OracleInternal@2026!"' >> /opt/oracle/config.py && \
+    echo 'ADMIN_API_KEY = "oracle-admin-internal-9f3a"' >> /opt/oracle/config.py && \
+    echo 'SSH_KEY_PATH = "/home/oracleuser/.ssh/id_rsa"' >> /opt/oracle/config.py && \
+    echo 'SERVICES = {' >> /opt/oracle/config.py && \
+    echo '    "graphql":   "http://localhost:4000",' >> /opt/oracle/config.py && \
+    echo '    "ai_engine": "http://ai-engine:8000",' >> /opt/oracle/config.py && \
+    echo '    "postgres":  "postgres:5432",' >> /opt/oracle/config.py && \
+    echo '}' >> /opt/oracle/config.py
 
 # HTB: sudo node NOPASSWD privesc vector
 RUN echo "oracleuser ALL=(root) NOPASSWD: /usr/bin/node" >> /etc/sudoers
