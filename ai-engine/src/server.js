@@ -7,8 +7,10 @@ const execAsync = promisify(exec);
 const app = express();
 app.use(express.json());
 
-const LM_URL       = process.env.LM_STUDIO_URL || 'http://host.docker.internal:1234';
-const DEFAULT_MODEL= process.env.DEFAULT_MODEL  || 'qwen2.5-7b-instruct';
+//const LM_URL       = process.env.LM_STUDIO_URL || 'http://host.docker.internal:1234';
+const DEFAULT_MODEL= process.env.DEFAULT_MODEL  || '';
+
+const LM_URL = process.env.LM_STUDIO_URL || 'http://host.docker.internal:11434';
 
 // ── Internal config (HTB: discoverable post-RCE) ─────────────────────────────
 const CONFIG = {
